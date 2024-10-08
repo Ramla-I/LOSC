@@ -1,19 +1,23 @@
 #!/bin/bash
 
-# Check if folder is provided as an argument
+# Check if an argument (file or folder) is provided
 if [ -z "$1" ]; then
-  echo "Usage: $0 folder_path"
+  echo "Usage: $0 file_or_folder_path"
   exit 1
 fi
 
-# Folder to search in
-FOLDER="$1"
+# Path to file or folder
+TARGET="$1"
 
-# # Ensure the folder exists
-# if [ ! -d "$FOLDER" ]; then
-#   echo "Error: Folder '$FOLDER' does not exist."
-#   exit 1
-# fi
+# Check if the target is a file or a folder
+if [ -f "$TARGET" ]; then
+  SEARCH_PATH="$TARGET"
+elif [ -d "$TARGET" ]; then
+  SEARCH_PATH="$TARGET"
+else
+  echo "Error: '$TARGET' is neither a valid file nor a folder."
+  exit 1
+fi
 
 # Initialize counts for each specification keyword
 count_requires=0
