@@ -1,35 +1,39 @@
 #!/bin/bash
 
-# Check if folder is provided as an argument
+# Check if an argument (file or folder) is provided
 if [ -z "$1" ]; then
-  echo "Usage: $0 folder_path"
+  echo "Usage: $0 file_or_folder_path"
   exit 1
 fi
 
-# Folder to search in
-FOLDER="$1"
+# Path to file or folder
+TARGET="$1"
 
-# # Ensure the folder exists
-# if [ ! -d "$FOLDER" ]; then
-#   echo "Error: Folder '$FOLDER' does not exist."
-#   exit 1
-# fi
+# Check if the target is a file or a folder
+if [ -f "$TARGET" ]; then
+  SEARCH_PATH="$TARGET"
+elif [ -d "$TARGET" ]; then
+  SEARCH_PATH="$TARGET"
+else
+  echo "Error: '$TARGET' is neither a valid file nor a folder."
+  exit 1
+fi
 
-# Find all files in the folder, search for the specific strings and count the occurrences
-count_ensures=$(grep -roh "#\[ensures" "$FOLDER" | wc -l)
-count_requires=$(grep -roh "#\[requires" "$FOLDER" | wc -l)
-count_extern=$(grep -roh "#\[extern_spec" "$FOLDER" | wc -l)
-count_trusted=$(grep -roh "#\[trusted\]" "$FOLDER" | wc -l)
-count_pure=$(grep -roh "#\[pure\]" "$FOLDER" | wc -l)
-count_verified=$(grep -roh "#\[verified\]" "$FOLDER" | wc -l)
-count_type_invariant=$(grep -roh "#\[invariant" "$FOLDER" | wc -l)
-count_body_invariant=$(grep -roh "body_invariant!(" "$FOLDER" | wc -l)
+# Find all occurrences, ignoring lines starting with //
+count_ensures=$(grep -rOh "#\[ensures" "$SEARCH_PATH" | grep -v "^//" | wc -l)
+count_requires=$(grep -rOh "#\[requires" "$SEARCH_PATH" | grep -v "^//" | wc -l)
+count_extern=$(grep -rOh "#\[extern_spec" "$SEARCH_PATH" | grep -v "^//" | wc -l)
+count_trusted=$(grep -rOh "#\[trusted\]" "$SEARCH_PATH" | grep -v "^//" | wc -l)
+count_pure=$(grep -rOh "#\[pure\]" "$SEARCH_PATH" | grep -v "^//" | wc -l)
+count_verified=$(grep -rOh "#\[verified\]" "$SEARCH_PATH" | grep -v "^//" | wc -l)
+count_type_invariant=$(grep -rOh "#\[invariant" "$SEARCH_PATH" | grep -v "^//" | wc -l)
+count_body_invariant=$(grep -rOh "body_invariant!(" "$SEARCH_PATH" | grep -v "^//" | wc -l)
 
 # Sum all counts
 total_count=$((count_ensures + count_requires + count_extern + count_trusted + count_pure + count_verified + count_type_invariant))
 
 # Display the results
-echo "Occurrences of the following tags in the folder '$FOLDER':"
+echo "Occurrences of the following tags in '$TARGET':"
 echo "--------------------------------------------"
 echo "#[ensures]       : $count_ensures"
 echo "#[requires]      : $count_requires"
