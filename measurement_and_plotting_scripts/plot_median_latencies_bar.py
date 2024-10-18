@@ -6,7 +6,8 @@ df = pd.DataFrame({
     'latencies': ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20'],
     'TinyNF': [3987.0, 4073.0, 4272.0, 4522.0, 4723.0, 4887.0, 5012.0, 5072.0, 5145.0, 5235.0, 5376.0, 5533.0, 5597.0, 5667.0, 5722.0, 5802.0, 5853.0, 5962.0, 6394.0, 6832.0, 11312.0],
     'DPDK-20.02': [4051.0, 4076.0, 4173.0, 4307.0, 4371.0, 4410.0, 4460.0, 4555.0, 4646.0, 4752.0, 4944.0, 5245.0, 5325.0, 5440.0, 5533.0, 5673.0, 5795.0, 5959.0, 6665.0, 7264.0, 12540.5],
-    'DPDK-23.11.2': [4057.0, 4086.0, 4166.0, 4317.0, 4391.0, 4403.0, 4464.0, 4573.0, 4659.0, 4775.0, 4976.0, 5280.0, 5353.0, 5501.0, 5568.0, 5696.0, 5833.0, 6023.0, 6816.0, 7344.0, 13805.0]
+    'DPDK-23.11.2': [4057.0, 4086.0, 4166.0, 4317.0, 4391.0, 4403.0, 4464.0, 4573.0, 4659.0, 4775.0, 4976.0, 5280.0, 5353.0, 5501.0, 5568.0, 5696.0, 5833.0, 6023.0, 6816.0, 7344.0, 13805.0],
+    'hybrid(restricted)': [4003.0, 4112.0, 4336.0, 4570.0, 4806.0, 4957.0, 5095.0, 5155.0, 5239.0, 5328.0, 5469.0, 5661.0, 5673.0, 5750.0, 5798.0, 5901.0, 5958.0, 6080.0, 6659.0, 7059.0, 9136.0],
 })
 
 yerr_tinynf_lower = [32.0, 114.0, 282.0, 362.0, 406.0, 401.0, 411.0, 397.0, 422.0, 423.0, 435.0, 435.0, 417.0, 406.0, 391.0, 400.0, 417.0, 429.0, 663.0, 732.65, 0] #4672.0#]
@@ -15,30 +16,39 @@ yerr_dpdk20_lower = [35.0, 73.0, 157.0, 237.0, 250.0, 243.0, 233.0, 238.0, 259.0
 yerr_dpdk20_upper = [227.0, 360.0, 387.0, 537.0, 480.0, 467.0, 456.0, 479.0, 535.0, 535.1, 598.65, 1769.0, 1359.0, 1188.0, 818.1, 785.0, 963.3, 937.0, 989.0, 1460.3, 0] #121178.5#]
 yerr_dpdk23_lower = [35.0, 67.0, 137.0, 237.0, 253.0, 237.0, 234.0, 244.0, 266.0, 279.0, 324.0, 413.0, 364.0, 419.0, 445.0, 454.0, 444.0, 455.0, 899.3, 832.0, 0] # 6605.0]
 yerr_dpdk23_upper = [222.0, 372.0, 394.0, 515.0, 486.0, 485.7, 480.0, 486.0, 528.95, 593.9, 650.0, 1709.0, 1367.0, 1276.0, 901.25, 746.0, 840.2, 965.1, 947.3, 1714.4, 0] # 2784.45]
+yerr_restricted_lower = [38.0, 131.0, 323.0, 378.0, 428.0, 410.0, 433.0, 403.0, 414.0, 413.0, 426.0, 451.0, 409.0, 413.0, 409.0, 404.0, 406.0, 429.0, 752.0, 707.0, 0] # 2231.5]
+yerr_restricted_upper = [176.7, 665.0, 713.0, 662.0, 663.0, 608.0, 618.8, 630.0, 646.0, 659.0, 656.0, 1651.0, 1050.0, 1072.0, 809.85, 758.4, 695.0, 807.9, 864.0, 673.0, 0] # 1402.0]
+# yerr_restricted_upper = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] # 6605.0]
 
+yerr = [[yerr_tinynf_lower, yerr_tinynf_upper], [yerr_dpdk23_lower, yerr_dpdk23_upper], [yerr_restricted_lower, yerr_restricted_upper]]
 
-
-# Create the plot
-plt.figure(figsize=(10, 6))
+# # Create the plot
+# plt.figure(figsize=(10, 6))
 
 # Plot TinyNF data
-plt.errorbar(df['latencies'], df['TinyNF'], label='TinyNF', marker='o', color='blue', yerr=[yerr_tinynf_lower, yerr_tinynf_upper])
+# plt.plot(df['latencies'], df['TinyNF'], label='TinyNF', marker='o', color='blue', yerr=[yerr_tinynf_lower, yerr_tinynf_upper])
+ax = df.plot(x='latencies', y=['TinyNF', 'DPDK-23.11.2', 'hybrid(restricted)'], kind='bar', yerr=yerr, capsize=2, legend=False)
 
-# Plot DPDK data
-plt.errorbar(df['latencies'], df['DPDK-20.02'], label='DPDK-20.02', marker='s', color='green', yerr=[yerr_dpdk20_lower, yerr_dpdk20_upper])
+# Add hatches to the bars
+for i, bar in enumerate(ax.patches):
+    if i <= 20:
+        bar.set_hatch('//')
+    elif i > 41:
+        bar.set_hatch('x')
+    # else:
+    #     bar.set_hatch('o')
 
-# Plot DPDK data
-plt.errorbar(df['latencies'], df['DPDK-23.11.2'], label='DPDK-23.11.2', marker='x', color='purple', yerr=[yerr_dpdk23_lower, yerr_dpdk23_upper])
-
-plt.xlim(0, 20)
 # Add labels and title
 plt.ylabel('Median Latency (ns)')
-plt.xlabel('Background Traffic Throughput (Gbps)')
+plt.xlabel('Background Throughput (Gbps)')
 plt.title('Latency of ixgbe drivers')
 
 # Add legend
 plt.legend()
 
-# Display the plot
-# plt.grid(True)
+plt.rcParams['figure.dpi']=500
+plt.rcParams['pdf.fonttype']=42
+plt.rcParams['ps.fonttype']=42
 plt.show()
+
+plt.savefig('latency_comparison.eps', format='eps')
