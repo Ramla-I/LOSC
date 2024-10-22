@@ -52,8 +52,8 @@ def plot_medians(stats):
         p5.append(values['5th_percentile'])
         p95.append(values['95th_percentile'])
     
-    yerr_lower = np.subtract(medians, p5)
-    yerr_upper = np.subtract(p95, medians)
+    yerr_lower = p5 #np.subtract(medians, p5)
+    yerr_upper = p95 #np.subtract(p95, medians)
     yerr = [yerr_lower,yerr_upper]
 
     print(labels)
